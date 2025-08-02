@@ -60,6 +60,7 @@ Requirements:
 - Highlight relevant experience from resume
 - Tailor to job requirements
 - Include specific examples
+- At the end of the cover letter include the name of the person applying.
 
 Resume:
 ${resume}
@@ -101,19 +102,49 @@ app.post('/generate-resume', async (req, res) => {
         });
 
         const prompt = `
-Rewrite the following resume so that it is tailored specifically to the job description below.
+You are a resume optimization assistant.
 
-🛠 Requirements:
-- Match experience/skills with job description
-- Use ATS-friendly language
-- Keep resume sections like:
-  * Contact Info
-  * Professional Summary
-  * Skills
-  * Experience
-  * Education
-- Use bullet points for responsibilities/achievements
-- Output as clean, professional **Markdown** (or HTML if possible)
+Take the resume provided below and tailor it specifically to the job description that follows. Focus on aligning relevant skills, experience, and tone to the job posting.
+
+⚠️ IMPORTANT: Structure the improved resume using the **exact section order and headings** below. If a section has no content, leave it blank or write "Available upon request".
+
+---
+
+📄 STRUCTURE:
+
+ Summary of Qualifications
+- Use 3–5 bullet points.
+- Each bullet should follow this format:
+  - [Adjective/noun] + [high level description of experience or attribute]
+  - E.g., “Strong interpersonal skills demonstrated through peer mentorship and front-desk customer service roles.”
+
+ Education
+- Include institution, degree/diploma, expected/completed graduation year.
+- Add relevant courses or projects if useful.
+
+ [Skill or Experience Heading 1]
+ [Skill or Experience Heading 2]
+ [Skill or Experience Heading 3]
+- For these sections:
+  - Use skill names as headings (e.g., "Leadership", "Customer Service", "Technical Writing")
+  - Under each heading, include bullet points of related achievements/tasks
+  - 2–4 bullets per heading
+
+ Experience Summary
+- List job titles, organizations, and dates only (no bullet details)
+- In reverse chronological order
+
+ Activities and Interests
+- Include extracurriculars, volunteer roles, personal development
+- Hobbies can be listed at the end, separated by commas
+
+---
+
+🎯 Tone: Clear, professional, ATS-friendly
+
+Now tailor the following resume using the structure above:
+
+---
 
 📄 Resume:
 ${resume}
@@ -121,7 +152,9 @@ ${resume}
 💼 Job Description:
 ${job}
 
-Return the improved resume below:
+---
+
+Return the improved resume only — no explanation. Make sure it follows the exact section order.
 `;
 
 
