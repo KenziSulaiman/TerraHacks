@@ -52,29 +52,22 @@ app.post('/generate', async (req, res) => {
             model: "gemini-1.5-flash"
         });
 
-        const prompt = `
-Rewrite the following resume so that it is tailored specifically to the job description below.
+        const prompt = `Write a professional cover letter for this job application.
 
-🛠 Requirements:
-- Match experience/skills with job description
-- Use ATS-friendly language
-- Keep resume sections like:
-  * Contact Info
-  * Professional Summary
-  * Skills
-  * Experience
-  * Education
-- Use bullet points for responsibilities/achievements
-- Output as clean, professional **Markdown** (or HTML if possible)
+Requirements:
+- Maximum 250 words
+- Professional but friendly tone
+- Highlight relevant experience from resume
+- Tailor to job requirements
+- Include specific examples
 
-📄 Resume:
-${resume.substring(0, 3000)}
+Resume:
+${resume}
 
-💼 Job Description:
-${job.substring(0, 1500)}
+Job Description:
+${job}
 
-Return the improved resume below:
-`;
+Write the cover letter:`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -107,19 +100,30 @@ app.post('/generate-resume', async (req, res) => {
             model: "gemini-1.5-flash"
         });
 
-        const prompt = `Rewrite the following resume to tailor it specifically to the job description. 
-Focus on aligning skills, experience, and accomplishments with what the job is asking for.
+        const prompt = `
+Rewrite the following resume so that it is tailored specifically to the job description below.
 
-Maintain proper resume formatting (headers, bullet points, etc.). 
-Use keywords from the job description and optimize for ATS (Applicant Tracking Systems).
+🛠 Requirements:
+- Match experience/skills with job description
+- Use ATS-friendly language
+- Keep resume sections like:
+  * Contact Info
+  * Professional Summary
+  * Skills
+  * Experience
+  * Education
+- Use bullet points for responsibilities/achievements
+- Output as clean, professional **Markdown** (or HTML if possible)
 
-Resume:
-${resume.substring(0, 3000)}
+📄 Resume:
+${resume}
 
-Job Description:
-${job.substring(0, 1500)}
+💼 Job Description:
+${job}
 
-Return only the improved resume below:`;
+Return the improved resume below:
+`;
+
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
