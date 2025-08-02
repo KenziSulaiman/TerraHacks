@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Cover Letter Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .input-section, .output-section {
+            padding: 40px;
+        }
+
+        .input-section {
+            border-right: 1px solid #e0e0e0;
+            background: #fafafa;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .output-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4facfe;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #output {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            min-height: 200px;
+            white-space: pre-wrap;
+            color: #333;
+        }
+
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c44;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #484;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-section {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Cover Letter Generator</h1>
+            <p>Create professional, personalized cover letters in seconds</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <form id="coverLetterForm">
+                    <div class="form-group">
+                        <label for="resume">📄 Your Resume/CV:</label>
+                        <textarea 
+                            id="resume" 
+                            name="resume" 
+                            placeholder="Paste your resume or key professional highlights here..."
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="job">💼 Job Description:</label>
+                        <textarea 
+                            id="job" 
+                            name="job" 
+                            placeholder="Paste the job description or job requirements here..."
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <button type="submit" class="generate-btn" id="generateBtn">
+                        ✨ Generate Cover Letter
+                    </button>
+                </form>
+            </div>
+            
+            <div class="output-section">
+                <h3>📝 Generated Cover Letter:</h3>
+                
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Crafting your perfect cover letter...</p>
+                </div>
+                
+                <div id="output">
+                    Your AI-generated cover letter will appear here...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('coverLetterForm');
+        const output = document.getElementById('output');
+        const loading = document.getElementById('loading');
+        const generateBtn = document.getElementById('generateBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const resume = document.getElementById('resume').value.trim();
+            const job = document.getElementById('job').value.trim();
+            
+            // Validate inputs
+            if (!resume || !job) {
+                showError('Please fill in both your resume and the job description.');
+                return;
+            }
+            
+            // Show loading state
+            loading.classList.add('show');
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+            output.innerHTML = '';
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ resume, job })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || `Server error: ${response.status}`);
+                }
+                
+                // Show success
+                showSuccess('Cover letter generated successfully!');
+                output.textContent = data.letter;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError(getErrorMessage(error.message));
+                output.innerHTML = '';
+                
+            } finally {
+                // Hide loading state
+                loading.classList.remove('show');
+                generateBtn.disabled = false;
+                generateBtn.textContent = '✨ Generate Cover Letter';
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            output.parentNode.insertBefore(errorDiv, output);
+            
+            // Remove error after 5 seconds
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.parentNode.removeChild(errorDiv);
+                }
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            output.parentNode.insertBefore(successDiv, output);
+            
+            // Remove success message after 3 seconds
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.parentNode.removeChild(successDiv);
+                }
+            }, 3000);
+        }
+
+        function getErrorMessage(error) {
+            if (error.includes('Invalid API key')) {
+                return '🔑 API key issue: Please check your Google AI Studio API key in server.js';
+            }
+            if (error.includes('billing')) {
+                return '💳 Billing required: Please enable billing in Google Cloud Console';
+            }
+            if (error.includes('quota')) {
+                return '⏱️ Rate limit exceeded: Please wait a moment and try again';
+            }
+            if (error.includes('ECONNREFUSED')) {
+                return '🔌 Server not running: Please start your Node.js server first';
+            }
+            return `❌ ${error}`;
+        }
+
+        // Auto-resize textareas
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.max(150, this.scrollHeight) + 'px';
+            });
+        });
+    </script>
+</body>
+</html>
