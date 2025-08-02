@@ -208,7 +208,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🤖 AI Cover Letter Generator</h1>
+            <h1> AI Cover Letter Generator</h1>
             <p>Create professional, personalized cover letters in seconds</p>
         </div>
 
@@ -216,26 +216,26 @@
             <div class="input-section">
                 <form id="coverLetterForm">
                     <div class="form-group">
-                        <label for="resume">📄 Your Resume/CV:</label>
+                        <label for="resume"> Your Resume/CV:</label>
                         <textarea id="resume" name="resume"
                             placeholder="Paste your resume or key professional highlights here..." required></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="job">💼 Job Description:</label>
+                        <label for="job"> Job Description:</label>
                         <textarea id="job" name="job"
                             placeholder="Paste the job description or job requirements here..." required></textarea>
                     </div>
 
                     <div class="form-group">
                         <button type="button" class="generate-btn" id="generateResumeBtn">
-                            🎯 Generate Tailored Resume
+                             Generate Tailored Resume
                         </button>
                     </div>
 
                     <div class="form-group">
                         <button type="button" class="generate-btn" id="generateCoverLetterBtn">
-                            ✨ Generate Cover Letter
+                             Generate Cover Letter
                         </button>
                     </div>
 
@@ -243,7 +243,7 @@
             </div>
 
             <div class="output-section">
-                <h3>📝 Generated Cover Letter:</h3>
+                <h3> Generated Cover Letter:</h3>
 
                 <div id="loading" class="loading">
                     <div class="spinner"></div>
@@ -369,27 +369,27 @@
 
         function getErrorMessage(error) {
             if (error.includes('Invalid API key')) {
-                return '🔑 API key issue: Please check your Google AI Studio API key in server.js';
+                return ' API key issue: Please check your Google AI Studio API key in server.js';
             }
             if (error.includes('billing')) {
-                return '💳 Billing required: Please enable billing in Google Cloud Console';
+                return ' Billing required: Please enable billing in Google Cloud Console';
             }
             if (error.includes('quota')) {
-                return '⏱️ Rate limit exceeded: Please wait a moment and try again';
+                return ' Rate limit exceeded: Please wait a moment and try again';
             }
             if (error.includes('ECONNREFUSED')) {
-                return '🔌 Server not running: Please start your Node.js server first';
+                return ' Server not running: Please start your Node.js server first';
             }
-            return `❌ ${error}`;
+            return ` ${error}`;
         }
 
         // Auto-resize textareas
-        document.querySelectorAll('textarea').forEach(textarea => {
-            textarea.addEventListener('input', function () {
-                this.style.height = 'auto';
-                this.style.height = Math.max(150, this.scrollHeight) + 'px';
-            });
-        });
+        //document.querySelectorAll('textarea').forEach(textarea => {
+         //   textarea.addEventListener('input', function () {
+             //   this.style.height = 'auto';
+             //   this.style.height = Math.max(150, this.scrollHeight) + 'px';
+          //  });
+       // });
     </script>
 </body>
 
