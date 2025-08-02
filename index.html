@@ -26,6 +26,18 @@
             border-radius: 16px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .header {
@@ -33,12 +45,39 @@
             color: white;
             text-align: center;
             padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+            transform: rotate(45deg);
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
         }
 
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
             font-weight: 700;
+            position: relative;
+            z-index: 1;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 20px rgba(255,255,255,0.5); }
+            to { text-shadow: 0 0 30px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.3); }
         }
 
         .header p {
@@ -64,6 +103,21 @@
 
         .form-group {
             margin-bottom: 25px;
+            animation: fadeInLeft 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.2s; }
+        .form-group:nth-child(2) { animation-delay: 0.4s; }
+        .form-group:nth-child(3) { animation-delay: 0.6s; }
+        .form-group:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes fadeInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         label {
@@ -83,13 +137,20 @@
             font-size: 14px;
             font-family: inherit;
             resize: vertical;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         textarea:focus {
             outline: none;
             border-color: #4facfe;
             box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+            transform: translateY(-2px);
+        }
+
+        textarea:hover {
+            border-color: #4facfe;
+            transform: translateY(-1px);
         }
 
         .generate-btn {
@@ -102,16 +163,34 @@
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .generate-btn:hover::before {
+            left: 100%;
         }
 
         .generate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(79, 172, 254, 0.4);
         }
 
         .generate-btn:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
         }
 
         .generate-btn:disabled {
@@ -121,10 +200,93 @@
             box-shadow: none;
         }
 
+        .generate-btn:disabled::before {
+            display: none;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
         .output-section h3 {
             color: #333;
-            margin-bottom: 20px;
             font-size: 1.3rem;
+            margin: 0;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .copy-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease;
+        }
+
+        .copy-btn:hover::after {
+            width: 100px;
+            height: 100px;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .copy-btn.show {
+            display: inline-block;
+            animation: bounceIn 0.5s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .copy-btn.success {
+            background: #20c997;
+            animation: pulse 0.3s ease-in-out;
+        }
+
+        .copy-btn.error {
+            background: #dc3545;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
         .loading {
@@ -132,6 +294,7 @@
             text-align: center;
             padding: 40px;
             color: #666;
+            animation: fadeIn 0.3s ease-in;
         }
 
         .loading.show {
@@ -144,18 +307,29 @@
             border-radius: 50%;
             width: 40px;
             height: 40px;
-            animation: spin 1s linear infinite;
+            animation: spin 1s linear infinite, spinGlow 2s ease-in-out infinite alternate;
             margin: 0 auto 20px;
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-            100% {
-                transform: rotate(360deg);
+        @keyframes spinGlow {
+            0% { 
+                box-shadow: 0 0 5px rgba(79, 172, 254, 0.3);
+                transform: scale(1);
             }
+            100% { 
+                box-shadow: 0 0 20px rgba(79, 172, 254, 0.6);
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         #output {
@@ -168,6 +342,26 @@
             min-height: 200px;
             white-space: pre-wrap;
             color: #333;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #output.content-loaded {
+            animation: slideInRight 0.6s ease-out;
+            border-color: #4facfe;
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.1);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .error {
@@ -177,6 +371,7 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
+            animation: slideInDown 0.4s ease-out, shake 0.5s ease-in-out;
         }
 
         .success {
@@ -186,6 +381,23 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
+            animation: slideInDown 0.4s ease-out, successPulse 0.6s ease-in-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes successPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
         }
 
         @media (max-width: 768px) {
@@ -200,6 +412,12 @@
 
             .header h1 {
                 font-size: 2rem;
+            }
+
+            .output-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
             }
         }
     </style>
@@ -243,16 +461,22 @@
             </div>
 
             <div class="output-section">
-                <h3> Generated Cover Letter:</h3>
+                <div class="output-header">
+                    <h3 id="outputTitle"> Generated Content:</h3>
+                    <button type="button" class="copy-btn" id="copyBtn">
+                        📋 Copy to Clipboard
+                    </button>
+                </div>
 
                 <div id="loading" class="loading">
                     <div class="spinner"></div>
-                    <p>Crafting your perfect cover letter...</p>
+                    <p>Crafting your perfect content...</p>
                 </div>
 
                 <div id="output">
-                    Your AI-generated cover letter will appear here...
+                    Your AI-generated content will appear here...
                 </div>
+                
             </div>
         </div>
     </div>
@@ -260,10 +484,66 @@
     <script>
         const form = document.getElementById('coverLetterForm');
         const output = document.getElementById('output');
+        const outputTitle = document.getElementById('outputTitle');
         const loading = document.getElementById('loading');
         const generateResumeBtn = document.getElementById('generateResumeBtn');
         const generateCoverLetterBtn = document.getElementById('generateCoverLetterBtn');
+        const copyBtn = document.getElementById('copyBtn');
 
+        // Copy to clipboard functionality
+        async function copyToClipboard(text) {
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(text);
+                    return true;
+                } else {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.style.position = 'fixed';
+                    textArea.style.opacity = '0';
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    const success = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    return success;
+                }
+            } catch (error) {
+                return false;
+            }
+        }
+
+        // Copy button event listener
+        copyBtn.addEventListener('click', async () => {
+            const textToCopy = output.textContent;
+            
+            if (!textToCopy || textToCopy === 'Your AI-generated content will appear here...') {
+                showError('No content to copy!');
+                return;
+            }
+
+            const originalText = copyBtn.textContent;
+            copyBtn.disabled = true;
+
+            const success = await copyToClipboard(textToCopy);
+            
+            if (success) {
+                copyBtn.textContent = '✅ Copied!';
+                copyBtn.className = 'copy-btn show success';
+                showSuccess('Content copied to clipboard!');
+            } else {
+                copyBtn.textContent = '❌ Copy Failed';
+                copyBtn.className = 'copy-btn show error';
+                showError('Failed to copy content. Please try selecting and copying manually.');
+            }
+
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+                copyBtn.className = 'copy-btn show';
+                copyBtn.disabled = false;
+            }, 2000);
+        });
 
         generateResumeBtn.addEventListener('click', async () => {
             const resume = document.getElementById('resume').value.trim();
@@ -276,6 +556,9 @@
 
             loading.classList.add('show');
             output.innerHTML = '';
+            output.classList.remove('content-loaded');
+            copyBtn.classList.remove('show');
+            outputTitle.textContent = ' Generated Tailored Resume:';
             generateResumeBtn.disabled = true;
             generateResumeBtn.textContent = 'Generating...';
 
@@ -292,6 +575,8 @@
 
                 showSuccess('Tailored resume generated!');
                 output.textContent = data.resume;
+                output.classList.add('content-loaded');
+                copyBtn.classList.add('show');
 
             } catch (err) {
                 showError(getErrorMessage(err.message));
@@ -301,6 +586,7 @@
                 generateResumeBtn.textContent = '🎯 Generate Tailored Resume';
             }
         });
+
         generateCoverLetterBtn.addEventListener('click', async () => {
             const resume = document.getElementById('resume').value.trim();
             const job = document.getElementById('job').value.trim();
@@ -312,6 +598,9 @@
 
             loading.classList.add('show');
             output.innerHTML = '';
+            output.classList.remove('content-loaded');
+            copyBtn.classList.remove('show');
+            outputTitle.textContent = ' Generated Cover Letter:';
             generateCoverLetterBtn.disabled = true;
             generateCoverLetterBtn.textContent = 'Generating...';
 
@@ -328,6 +617,8 @@
 
                 showSuccess('Cover letter generated!');
                 output.textContent = data.letter;
+                output.classList.add('content-loaded');
+                copyBtn.classList.add('show');
 
             } catch (err) {
                 showError(getErrorMessage(err.message));
@@ -337,7 +628,6 @@
                 generateCoverLetterBtn.textContent = '✨ Generate Cover Letter';
             }
         });
-
 
         function showError(message) {
             const errorDiv = document.createElement('div');
@@ -382,14 +672,6 @@
             }
             return ` ${error}`;
         }
-
-        // Auto-resize textareas
-        //document.querySelectorAll('textarea').forEach(textarea => {
-         //   textarea.addEventListener('input', function () {
-             //   this.style.height = 'auto';
-             //   this.style.height = Math.max(150, this.scrollHeight) + 'px';
-          //  });
-       // });
     </script>
 </body>
 
