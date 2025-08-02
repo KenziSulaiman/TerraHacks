@@ -5,130 +5,146 @@ const path = require('path');
 
 const app = express();
 
-// Enhanced middleware
+// ✅ Middleware
 app.use(cors({
     origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
     credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
-app.use(express.static(path.join(__dirname))); // Better static file serving
+app.use(express.static(path.join(__dirname)));
 
-// ⚠️ IMPORTANT: Replace with your actual API key from Google AI Studio
+// 🔑 Your Google AI API Key
 const API_KEY = "AIzaSyAlddEqUHlyZy8TsAdRXESRqy5c4G2jz4k";
 
 if (!API_KEY) {
     console.error("❌ ERROR: Please set your Google AI Studio API key in server.js");
-    console.error("Get your key from: https://makersuite.google.com/app/apikey");
     process.exit(1);
 }
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-// Health check endpoint
+// ✅ Health check
 app.get('/health', (req, res) => {
-    res.json({ 
-        status: 'Server is running', 
+    res.json({
+        status: 'Server is running',
         timestamp: new Date().toISOString(),
-        apiKeySet: API_KEY && API_KEY !== "AIzaSyAlddEqUHlyZy8TsAdRXESRqy5c4G2jz4k"
+        apiKeySet: !!API_KEY
     });
 });
 
-// Serve the main page
+// ✅ Serve index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Generate cover letter endpoint
+// ✉️ Generate Cover Letter
 app.post('/generate', async (req, res) => {
-    console.log('📝 Received generate request');
-    
+    console.log('📩 Received cover letter request');
+
     try {
         const { resume, job } = req.body;
 
-        // Validate input
         if (!resume || !job) {
-            console.log('❌ Missing resume or job description');
-            return res.status(400).json({ 
-                error: 'Both resume and job description are required' 
-            });
+            return res.status(400).json({ error: 'Both resume and job description are required' });
         }
 
-        console.log('✅ Input validated, generating with Gemini...');
-        
-        // Use gemini-1.5-flash (more reliable than gemini-pro)
-        const model = genAI.getGenerativeModel({ 
+        const model = genAI.getGenerativeModel({
             model: "gemini-1.5-flash"
         });
 
-        const prompt = `Write a professional cover letter for this job application.
+        const prompt = `
+Rewrite the following resume so that it is tailored specifically to the job description below.
 
-Requirements:
-- Maximum 250 words
-- Professional but friendly tone
-- Highlight relevant experience from resume
-- Tailor to job requirements
-- Include specific examples
+🛠 Requirements:
+- Match experience/skills with job description
+- Use ATS-friendly language
+- Keep resume sections like:
+  * Contact Info
+  * Professional Summary
+  * Skills
+  * Experience
+  * Education
+- Use bullet points for responsibilities/achievements
+- Output as clean, professional **Markdown** (or HTML if possible)
 
-Resume:
-${resume.substring(0, 2000)} // Limit resume length
+📄 Resume:
+${resume.substring(0, 3000)}
 
-Job Description:
-${job.substring(0, 1000)} // Limit job description length
+💼 Job Description:
+${job.substring(0, 1500)}
 
-Write the cover letter:`;
+Return the improved resume below:
+`;
 
-        console.log('🤖 Calling Gemini API...');
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
 
-        console.log('✅ Cover letter generated successfully');
+        console.log('✅ Cover letter generated');
         res.json({ letter: text });
 
     } catch (error) {
-        console.error('❌ Error generating cover letter:', error.message);
-        
-        // Handle specific Google AI errors
-        if (error.message?.includes('API_KEY_INVALID')) {
-            return res.status(401).json({ 
-                error: 'Invalid API key. Please check your Google AI Studio API key.' 
-            });
-        }
-        
-        if (error.message?.includes('PERMISSION_DENIED')) {
-            return res.status(403).json({ 
-                error: 'Permission denied. Please enable billing in Google Cloud Console or check API key permissions.' 
-            });
-        }
-        
-        if (error.message?.includes('QUOTA_EXCEEDED')) {
-            return res.status(429).json({ 
-                error: 'API quota exceeded. Please try again later.' 
-            });
-        }
-
-        if (error.message?.includes('models/gemini')) {
-            return res.status(400).json({ 
-                error: 'Model not available. Using gemini-1.5-flash which should be available globally.' 
-            });
-        }
-
-        res.status(500).json({ 
-            error: 'Server error generating cover letter. Check server logs for details.',
+        console.error('❌ Cover letter error:', error.message);
+        res.status(500).json({
+            error: 'Failed to generate cover letter.',
             details: error.message
         });
     }
 });
 
-// Error handling middleware
+// 📄 Generate Tailored Resume
+app.post('/generate-resume', async (req, res) => {
+    console.log('📄 Received tailored resume request');
+
+    try {
+        const { resume, job } = req.body;
+
+        if (!resume || !job) {
+            return res.status(400).json({ error: 'Both resume and job description are required' });
+        }
+
+        const model = genAI.getGenerativeModel({
+            model: "gemini-1.5-flash"
+        });
+
+        const prompt = `Rewrite the following resume to tailor it specifically to the job description. 
+Focus on aligning skills, experience, and accomplishments with what the job is asking for.
+
+Maintain proper resume formatting (headers, bullet points, etc.). 
+Use keywords from the job description and optimize for ATS (Applicant Tracking Systems).
+
+Resume:
+${resume.substring(0, 3000)}
+
+Job Description:
+${job.substring(0, 1500)}
+
+Return only the improved resume below:`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        console.log('✅ Tailored resume generated');
+        res.json({ resume: text });
+
+    } catch (error) {
+        console.error('❌ Resume generation error:', error.message);
+        res.status(500).json({
+            error: 'Failed to generate tailored resume.',
+            details: error.message
+        });
+    }
+});
+
+// 🧯 Global error handler
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
     res.status(500).json({ error: 'Internal server error' });
 });
 
+// 🚀 Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
-    console.log(`📝 Open http://localhost:${PORT} to use the cover letter generator`);
-    console.log(`🔑 API Key configured: ${API_KEY ? 'Yes' : 'No'}`);
 });

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +24,7 @@
             margin: 0 auto;
             background: white;
             border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -51,7 +52,8 @@
             gap: 0;
         }
 
-        .input-section, .output-section {
+        .input-section,
+        .output-section {
             padding: 40px;
         }
 
@@ -147,8 +149,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         #output {
@@ -185,62 +192,64 @@
             .main-content {
                 grid-template-columns: 1fr;
             }
-            
+
             .input-section {
                 border-right: none;
                 border-bottom: 1px solid #e0e0e0;
             }
-            
+
             .header h1 {
                 font-size: 2rem;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>🤖 AI Cover Letter Generator</h1>
             <p>Create professional, personalized cover letters in seconds</p>
         </div>
-        
+
         <div class="main-content">
             <div class="input-section">
                 <form id="coverLetterForm">
                     <div class="form-group">
                         <label for="resume">📄 Your Resume/CV:</label>
-                        <textarea 
-                            id="resume" 
-                            name="resume" 
-                            placeholder="Paste your resume or key professional highlights here..."
-                            required
-                        ></textarea>
+                        <textarea id="resume" name="resume"
+                            placeholder="Paste your resume or key professional highlights here..." required></textarea>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="job">💼 Job Description:</label>
-                        <textarea 
-                            id="job" 
-                            name="job" 
-                            placeholder="Paste the job description or job requirements here..."
-                            required
-                        ></textarea>
+                        <textarea id="job" name="job"
+                            placeholder="Paste the job description or job requirements here..." required></textarea>
                     </div>
-                    
-                    <button type="submit" class="generate-btn" id="generateBtn">
-                        ✨ Generate Cover Letter
-                    </button>
+
+                    <div class="form-group">
+                        <button type="button" class="generate-btn" id="generateResumeBtn">
+                            🎯 Generate Tailored Resume
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="button" class="generate-btn" id="generateCoverLetterBtn">
+                            ✨ Generate Cover Letter
+                        </button>
+                    </div>
+
                 </form>
             </div>
-            
+
             <div class="output-section">
                 <h3>📝 Generated Cover Letter:</h3>
-                
+
                 <div id="loading" class="loading">
                     <div class="spinner"></div>
                     <p>Crafting your perfect cover letter...</p>
                 </div>
-                
+
                 <div id="output">
                     Your AI-generated cover letter will appear here...
                 </div>
@@ -252,64 +261,90 @@
         const form = document.getElementById('coverLetterForm');
         const output = document.getElementById('output');
         const loading = document.getElementById('loading');
-        const generateBtn = document.getElementById('generateBtn');
+        const generateResumeBtn = document.getElementById('generateResumeBtn');
+        const generateCoverLetterBtn = document.getElementById('generateCoverLetterBtn');
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
+
+        generateResumeBtn.addEventListener('click', async () => {
             const resume = document.getElementById('resume').value.trim();
             const job = document.getElementById('job').value.trim();
-            
-            // Validate inputs
+
             if (!resume || !job) {
                 showError('Please fill in both your resume and the job description.');
                 return;
             }
-            
-            // Show loading state
+
             loading.classList.add('show');
-            generateBtn.disabled = true;
-            generateBtn.textContent = 'Generating...';
             output.innerHTML = '';
-            
+            generateResumeBtn.disabled = true;
+            generateResumeBtn.textContent = 'Generating...';
+
+            try {
+                const response = await fetch('/generate-resume', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resume, job })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error);
+
+                showSuccess('Tailored resume generated!');
+                output.textContent = data.resume;
+
+            } catch (err) {
+                showError(getErrorMessage(err.message));
+            } finally {
+                loading.classList.remove('show');
+                generateResumeBtn.disabled = false;
+                generateResumeBtn.textContent = '🎯 Generate Tailored Resume';
+            }
+        });
+        generateCoverLetterBtn.addEventListener('click', async () => {
+            const resume = document.getElementById('resume').value.trim();
+            const job = document.getElementById('job').value.trim();
+
+            if (!resume || !job) {
+                showError('Please fill in both your resume and the job description.');
+                return;
+            }
+
+            loading.classList.add('show');
+            output.innerHTML = '';
+            generateCoverLetterBtn.disabled = true;
+            generateCoverLetterBtn.textContent = 'Generating...';
+
             try {
                 const response = await fetch('/generate', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ resume, job })
                 });
-                
+
                 const data = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(data.error || `Server error: ${response.status}`);
-                }
-                
-                // Show success
-                showSuccess('Cover letter generated successfully!');
+
+                if (!response.ok) throw new Error(data.error);
+
+                showSuccess('Cover letter generated!');
                 output.textContent = data.letter;
-                
-            } catch (error) {
-                console.error('Error:', error);
-                showError(getErrorMessage(error.message));
-                output.innerHTML = '';
-                
+
+            } catch (err) {
+                showError(getErrorMessage(err.message));
             } finally {
-                // Hide loading state
                 loading.classList.remove('show');
-                generateBtn.disabled = false;
-                generateBtn.textContent = '✨ Generate Cover Letter';
+                generateCoverLetterBtn.disabled = false;
+                generateCoverLetterBtn.textContent = '✨ Generate Cover Letter';
             }
         });
+
 
         function showError(message) {
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error';
             errorDiv.textContent = message;
             output.parentNode.insertBefore(errorDiv, output);
-            
+
             // Remove error after 5 seconds
             setTimeout(() => {
                 if (errorDiv.parentNode) {
@@ -323,7 +358,7 @@
             successDiv.className = 'success';
             successDiv.textContent = message;
             output.parentNode.insertBefore(successDiv, output);
-            
+
             // Remove success message after 3 seconds
             setTimeout(() => {
                 if (successDiv.parentNode) {
@@ -350,11 +385,12 @@
 
         // Auto-resize textareas
         document.querySelectorAll('textarea').forEach(textarea => {
-            textarea.addEventListener('input', function() {
+            textarea.addEventListener('input', function () {
                 this.style.height = 'auto';
                 this.style.height = Math.max(150, this.scrollHeight) + 'px';
             });
         });
     </script>
 </body>
+
 </html>
