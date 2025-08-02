@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Cover Letter Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -34,6 +35,7 @@
                 opacity: 0;
                 transform: translateY(50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -56,14 +58,19 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
             animation: shimmer 3s ease-in-out infinite;
             transform: rotate(45deg);
         }
 
         @keyframes shimmer {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
+            0% {
+                transform: translateX(-100%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(100%) rotate(45deg);
+            }
         }
 
         .header h1 {
@@ -76,8 +83,13 @@
         }
 
         @keyframes titleGlow {
-            from { text-shadow: 0 0 20px rgba(255,255,255,0.5); }
-            to { text-shadow: 0 0 30px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.3); }
+            from {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            }
+
+            to {
+                text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.3);
+            }
         }
 
         .header p {
@@ -108,10 +120,21 @@
             transform: translateX(-20px);
         }
 
-        .form-group:nth-child(1) { animation-delay: 0.2s; }
-        .form-group:nth-child(2) { animation-delay: 0.4s; }
-        .form-group:nth-child(3) { animation-delay: 0.6s; }
-        .form-group:nth-child(4) { animation-delay: 0.8s; }
+        .form-group:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .form-group:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .form-group:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .form-group:nth-child(4) {
+            animation-delay: 0.8s;
+        }
 
         @keyframes fadeInLeft {
             to {
@@ -175,7 +198,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s;
         }
 
@@ -239,7 +262,7 @@
             left: 50%;
             width: 0;
             height: 0;
-            background: rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             transition: width 0.3s ease, height 0.3s ease;
@@ -262,9 +285,20 @@
         }
 
         @keyframes bounceIn {
-            0% { transform: scale(0); opacity: 0; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .copy-btn.success {
@@ -278,15 +312,33 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
         }
 
         .loading {
@@ -312,24 +364,35 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         @keyframes spinGlow {
-            0% { 
+            0% {
                 box-shadow: 0 0 5px rgba(79, 172, 254, 0.3);
                 transform: scale(1);
             }
-            100% { 
+
+            100% {
                 box-shadow: 0 0 20px rgba(79, 172, 254, 0.6);
                 transform: scale(1.1);
             }
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         #output {
@@ -358,6 +421,7 @@
                 opacity: 0;
                 transform: translateX(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -374,6 +438,10 @@
             animation: slideInDown 0.4s ease-out, shake 0.5s ease-in-out;
         }
 
+        #downloadPdfBtn{
+            margin-top: 10px;
+        }   
+
         .success {
             background: #efe;
             border: 1px solid #cfc;
@@ -389,6 +457,7 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -396,8 +465,15 @@
         }
 
         @keyframes successPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
         }
 
         @media (max-width: 768px) {
@@ -447,15 +523,17 @@
 
                     <div class="form-group">
                         <button type="button" class="generate-btn" id="generateResumeBtn">
-                             Generate Tailored Resume
+                            Generate Tailored Resume
                         </button>
                     </div>
 
                     <div class="form-group">
                         <button type="button" class="generate-btn" id="generateCoverLetterBtn">
-                             Generate Cover Letter
+                            Generate Cover Letter
                         </button>
                     </div>
+
+
 
                 </form>
             </div>
@@ -476,7 +554,13 @@
                 <div id="output">
                     Your AI-generated content will appear here...
                 </div>
-                
+
+                <div class="form-group">
+                    <button type="button" class="generate-btn" id="downloadPdfBtn">
+                        📥 Download as PDF
+                    </button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -516,7 +600,7 @@
         // Copy button event listener
         copyBtn.addEventListener('click', async () => {
             const textToCopy = output.textContent;
-            
+
             if (!textToCopy || textToCopy === 'Your AI-generated content will appear here...') {
                 showError('No content to copy!');
                 return;
@@ -526,7 +610,7 @@
             copyBtn.disabled = true;
 
             const success = await copyToClipboard(textToCopy);
-            
+
             if (success) {
                 copyBtn.textContent = '✅ Copied!';
                 copyBtn.className = 'copy-btn show success';
@@ -628,6 +712,23 @@
                 generateCoverLetterBtn.textContent = '✨ Generate Cover Letter';
             }
         });
+
+        document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const content = output.textContent.trim();
+
+            if (!content || content.includes('will appear here')) {
+                alert("Please generate a resume or cover letter first.");
+                return;
+            }
+
+            const lines = doc.splitTextToSize(content, 180); // Wrap text
+            doc.text(lines, 15, 20);
+            doc.save('Generated-Document.pdf');
+        });
+
 
         function showError(message) {
             const errorDiv = document.createElement('div');
