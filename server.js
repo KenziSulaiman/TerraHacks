@@ -14,9 +14,9 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname))); // Better static file serving
 
 // ⚠️ IMPORTANT: Replace with your actual API key from Google AI Studio
-const API_KEY = "AIza_PUT_YOUR_ACTUAL_API_KEY_HERE";
+const API_KEY = "AIzaSyAlddEqUHlyZy8TsAdRXESRqy5c4G2jz4k";
 
-if (!API_KEY || API_KEY === "AIza_PUT_YOUR_ACTUAL_API_KEY_HERE") {
+if (!API_KEY) {
     console.error("❌ ERROR: Please set your Google AI Studio API key in server.js");
     console.error("Get your key from: https://makersuite.google.com/app/apikey");
     process.exit(1);
