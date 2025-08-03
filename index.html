@@ -162,6 +162,10 @@
             pointer-events: none;
         }
 
+        #output {
+            white-space: pre-line;
+        }
+
         @keyframes borderGlow {
 
             0%,
@@ -1073,7 +1077,7 @@
             generateCoverLetterBtn.textContent = 'Generating...';
 
             try {
-                const response = await fetch('/generate', {
+                const response = await fetch('/generate-cover-letter', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ resume, job })

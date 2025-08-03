@@ -65,9 +65,14 @@ ${job}
 
 Write the cover letter:`;
 
+
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        const text = response.text();
+        const text = await response.text();
+
+        if (!text || typeof text !== 'string') {
+            return res.status(500).json({ error: 'Gemini returned no cover letter content.' });
+        }
 
         res.json({ letter: text });
 
@@ -103,7 +108,7 @@ app.post('/generate-resume', async (req, res) => {
 9. Other Sections (e.g. Technical Skills, Certifications) - optional
 10. Activities and Interests (volunteer, extracurricular, hobbies, etc.)
 
-Use ATS‑friendly language and stay within 1–2 pages. Do not add or omit sections Except for section 9. Do not explain — return only the resume formatted accordingly.
+Use ATS‑friendly language and stay within 1–2 pages. Do not add or omit sections except for section 9. Do not explain — return only the resume formatted accordingly.
 
 📄 Resume:
 ${resume}
@@ -113,9 +118,13 @@ ${job}`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        const text = response.text();
+        const text = await response.text();
 
-        res.json({ resume: text }); // ✅ Key fix here
+        if (!text || typeof text !== 'string') {
+            return res.status(500).json({ error: 'Gemini returned no resume content.' });
+        }
+
+        res.json({ resume: text });
 
     } catch (error) {
         console.error('❌ Error generating tailored resume:', error.message);
